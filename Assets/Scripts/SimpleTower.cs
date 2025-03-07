@@ -12,7 +12,7 @@ public class SimpleTower : MonoBehaviour {
 		if (m_projectilePrefab == null)
 			return;
 
-		foreach (var monster in FindObjectsOfType<Monster>()) {
+		foreach (var monster in FindObjectsByType<Monster>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)) {
 			if (Vector3.Distance (transform.position, monster.transform.position) > m_range)
 				continue;
 
@@ -20,7 +20,7 @@ public class SimpleTower : MonoBehaviour {
 				continue;
 
 			// shot
-			var projectile = Instantiate(m_projectilePrefab, transform.position + Vector3.up * 1.5f, Quaternion.identity) as GameObject;
+			var projectile = Instantiate(m_projectilePrefab, transform.position + Vector3.up * 1.5f, Quaternion.identity);
 			var projectileBeh = projectile.GetComponent<GuidedProjectile> ();
 			projectileBeh.m_target = monster.gameObject;
 

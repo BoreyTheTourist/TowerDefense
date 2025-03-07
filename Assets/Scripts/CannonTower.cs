@@ -13,7 +13,7 @@ public class CannonTower : MonoBehaviour {
 		if (m_projectilePrefab == null || m_shootPoint == null)
 			return;
 
-		foreach (var monster in FindObjectsOfType<Monster>()) {
+		foreach (var monster in FindObjectsByType<Monster>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)) {
 			if (Vector3.Distance (transform.position, monster.transform.position) > m_range)
 				continue;
 
