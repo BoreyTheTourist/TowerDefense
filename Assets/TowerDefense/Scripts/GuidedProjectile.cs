@@ -4,7 +4,7 @@ using System.Collections;
 public class GuidedProjectile : MonoBehaviour {
 	public GameObject m_target;
 	public float m_speed = 0.2f;
-	public int m_damage = 10;
+	public byte m_damage = 10;
 
 	void Update () {
 		if (m_target == null) {
@@ -20,14 +20,9 @@ public class GuidedProjectile : MonoBehaviour {
 	}
 
 	void OnTriggerEnter(Collider other) {
+		Destroy (gameObject);
 		var monster = other.gameObject.GetComponent<Monster> ();
 		if (monster == null)
 			return;
-
-		monster.m_hp -= m_damage;
-		if (monster.m_hp <= 0) {
-			Destroy (monster.gameObject);
-		}
-		Destroy (gameObject);
 	}
 }

@@ -1,21 +1,43 @@
 ﻿using UnityEngine;
-using System.Collections;
+using UnityEngine.Pool;
+using System.Collections.Generic;
 
 public class Spawner : MonoBehaviour {
-	public float m_interval = 3;
-	public GameObject m_moveTarget;
+	public Monster monster;
+	public float interval = 3;
+	public List<Transform> moveTargets;
 
 	private float m_lastSpawn = -1;
+	private Transform m_tr;
+	private ObjectPool<Monster> m_monsters;
 
-	void Update () {
-		if (Time.time > m_lastSpawn + m_interval) {
-			var newMonster = GameObject.CreatePrimitive (PrimitiveType.Capsule);
-			var r = newMonster.AddComponent<Rigidbody> ();
-			r.useGravity = false;
-			newMonster.transform.position = transform.position;
-			var monsterBeh = newMonster.AddComponent<Monster> ();
-			monsterBeh.m_moveTarget = m_moveTarget;
+	private void Awake() {
+		m_tr = transform;
+		m_monsters = new ObjectPool<Monster>(
+			createFunc: () => {
+				var m = Instantiate(monster);
+				m.moveTargets = moveTargets;
+				return m;
+			},
+			actionOnRelease: m => {
+				m.gameObject.SetActive(false);
+			},
+			actionOnGet: m => {
+				m.gameObject.SetActive(true);
+			}
+		);
+	}
 
+	public void Spawn() {
+		var m = m_monsters.Get();
+		m.transform.position = m_tr.position;
+		m.Finished += () => m_monsters.Release(m);
+		m.Move();
+	}
+
+	private void Update () {
+		if (Time.time > m_lastSpawn + interval) {
+			Spawn();
 			m_lastSpawn = Time.time;
 		}
 	}
