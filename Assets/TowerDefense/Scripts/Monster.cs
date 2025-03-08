@@ -3,13 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class Monster : MonoBehaviour {
-
+	[Header("Move")]
 	public List<Transform> moveTargets;
 	[SerializeField] public Rigidbody m_body;
 	public Vector3 speed { get => m_body.linearVelocity; }
 	public float speedVal = 0.1f;
-	public byte maxHp = 30;
-	public byte hp;
+
+	[Header("Damageable")]
+	[SerializeField] private Damageable m_dmg;
 
 	public event System.Action Finished;
 
@@ -21,19 +22,23 @@ public class Monster : MonoBehaviour {
 	}
 
 	private void OnEnable() {
-		hp = maxHp;
 		if (m_tr == null) {
 			m_tr = transform;
 		}
 		if (m_body == null) {
 			m_body = GetComponent<Rigidbody>();
 		}
+		if (m_dmg == null) {
+			m_dmg = GetComponentInChildren<Damageable>();
+		}
+		m_dmg.Died += Finish;
 	}
 
 	private void OnDisable() {
 		CancelInvoke();
 		StopAllCoroutines();
 		m_body.linearVelocity = Vector3.zero;
+		m_dmg.Died -= Finish;
 		Finished = null;
 	}
 
@@ -50,6 +55,10 @@ public class Monster : MonoBehaviour {
 				yield return new WaitForFixedUpdate();
 			}
 		}
+		Finished?.Invoke();
+	}
+
+	private void Finish() {
 		Finished?.Invoke();
 	}
 }
