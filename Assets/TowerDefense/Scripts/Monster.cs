@@ -34,14 +34,6 @@ public class Monster : MonoBehaviour {
 		m_dmg.Died += Finish;
 	}
 
-	private void OnDisable() {
-		CancelInvoke();
-		StopAllCoroutines();
-		m_body.linearVelocity = Vector3.zero;
-		m_dmg.Died -= Finish;
-		Finished = null;
-	}
-
 	public void Move() {
 		StartCoroutine(MoveCor());
 	}
