@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class StraightProjectileCannon : ProjectileCannon {
+public class BallisticProjectileCannon : ProjectileCannon {
 	public PhysicsProjectile projectile;
 	public Transform muzzle;
 	public Transform muzzleEnd;
@@ -10,6 +10,8 @@ public class StraightProjectileCannon : ProjectileCannon {
 	private Transform m_target;
 	private Vector3 m_tVel;
 
+	private Vector3 m_pVel;
+
 	private void Awake() {
 		ProjectilePool.AddPool(projectile);
 	}
@@ -18,13 +20,12 @@ public class StraightProjectileCannon : ProjectileCannon {
 		if (m_target == null) {
 			return;
 		}
-		var tDir = m_target.position - muzzleEnd.position;
-		if (!ArtilleryUtils.TryCalcVelStraight(tDir, m_tVel, projectileSpeed, out var hd)) {
+		if (!ArtilleryUtils.TryCalcVelBallistic(m_target.position, m_tVel, muzzleEnd.position, projectileSpeed, out m_pVel)) {
 			return;
 		}
 		muzzle.rotation = Quaternion.RotateTowards(
 			muzzle.rotation,
-			Quaternion.LookRotation(hd),
+			Quaternion.LookRotation(m_pVel),
 			rotationSpeed * Time.fixedDeltaTime);
 	}
 
@@ -35,9 +36,9 @@ public class StraightProjectileCannon : ProjectileCannon {
 
 	public override void Shoot() {
 		var p = ProjectilePool.Get<PhysicsProjectile>();
-		p.body.useGravity = false;
+		p.body.useGravity = true;
 		p.transform.SetPositionAndRotation(muzzleEnd.position, muzzleEnd.rotation);
-		p.body.linearVelocity = muzzleEnd.forward * projectileSpeed;
+		p.body.linearVelocity = m_pVel;
 		p.Destroyed += () => ProjectilePool.Release(p);
 	}
 }
