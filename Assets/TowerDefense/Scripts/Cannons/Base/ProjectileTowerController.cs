@@ -24,6 +24,7 @@ public class ProjectileTowerController : MonoBehaviour {
 		}
 		if (target != m_lastTarget) {
 			m_cannon.SetTarget(target);
+			m_lastTarget = target;
 		}
 		if (m_timer + shootDelay <= Time.time) {
 			m_timer = Time.time;

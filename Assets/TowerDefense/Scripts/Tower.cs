@@ -31,6 +31,7 @@ public class Tower : MonoBehaviour {
 	}
 
 	private void OnTriggerExit(Collider other) {
-		TargetExited?.Invoke(m_targets.Dequeue());
+		var t = m_targets.Dequeue();
+		TargetExited?.Invoke(t);
 	}
 }
