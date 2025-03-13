@@ -31,21 +31,6 @@ public static class ArtilleryUtils {
 		return true;
 	}
 
-	public static Vector3 CalcTargetVel(Transform target) {
-		var d = target.GetComponentInParent<Driver>();
-		if (d != null) {
-			return d.velocity;
-		}
-		var posb = target.position;
-		
-		var mode = Physics.simulationMode;
-		Physics.simulationMode = SimulationMode.Script;
-		Physics.Simulate(Time.fixedDeltaTime);
-		Physics.simulationMode = mode;
-
-		return (target.position - posb) / Time.fixedDeltaTime;
-	}
-
 	// pPos + pVel * t = tPos + tVel * t
 	// |pVel| = pSpeed = Sqrt(Dot(pVel, pVel))
 	// tDir = tPos - pPos

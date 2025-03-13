@@ -12,6 +12,7 @@ public class BallisticProjectileCannon : ProjectileCannon {
 	public float rotationSpeed = 30f;
 
 	private Transform m_target;
+	private Driver m_driver;
 	private Vector3 m_tVel;
 	private Vector3 m_pVel;
 
@@ -55,9 +56,19 @@ public class BallisticProjectileCannon : ProjectileCannon {
 			rotationSpeed * Time.fixedDeltaTime);
 	}
 
+	private void ChangeVelocity(Vector3 vel) {
+		m_tVel = vel;
+	}
+
 	public override void SetTarget(Transform target) {
 		m_target = target;
-		m_tVel = ArtilleryUtils.CalcTargetVel(m_target);
+		if (m_driver) {
+			m_driver.VelocityChanged -= ChangeVelocity;
+		}
+		m_tVel = CalcTargetVel(m_target, out m_driver);
+		if (m_driver) {
+			m_driver.VelocityChanged += ChangeVelocity;
+		}
 	}
 
 	public override void Shoot() {
@@ -66,5 +77,20 @@ public class BallisticProjectileCannon : ProjectileCannon {
 		p.transform.SetPositionAndRotation(muzzleEnd.position, muzzleEnd.rotation);
 		p.body.linearVelocity = ProjVel();
 		p.Destroyed += () => ProjectilePool.Release(p);
+	}
+	
+	public Vector3 CalcTargetVel(Transform target, out Driver driver) {
+		driver = target.GetComponentInParent<Driver>();
+		if (driver != null) {
+			return driver.velocity;
+		}
+		var posb = target.position;
+		
+		var mode = Physics.simulationMode;
+		Physics.simulationMode = SimulationMode.Script;
+		Physics.Simulate(Time.fixedDeltaTime);
+		Physics.simulationMode = mode;
+
+		return (target.position - posb) / Time.fixedDeltaTime;
 	}
 }
