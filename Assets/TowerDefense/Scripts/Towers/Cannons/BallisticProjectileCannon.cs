@@ -4,7 +4,7 @@ public class BallisticProjectileCannon : ProjectileCannon {
 	public PhysicsProjectile projectile;
 	public Transform muzzle;
 	public Transform muzzleEnd;
-	public float projectileSpeed = 2f;
+	public float latSpeed = 7f;
 	public float rotationSpeed = 10f;
 
 	private Transform m_target;
@@ -20,7 +20,7 @@ public class BallisticProjectileCannon : ProjectileCannon {
 		if (m_target == null) {
 			return;
 		}
-		if (!ArtilleryUtils.TryCalcVelBallistic(m_target.position, m_tVel, muzzleEnd.position, projectileSpeed, out m_pVel)) {
+		if (!ArtilleryUtils.TryCalcVelBallistic(m_target.position, m_tVel, muzzleEnd.position, latSpeed, out m_pVel)) {
 			return;
 		}
 		muzzle.rotation = Quaternion.RotateTowards(

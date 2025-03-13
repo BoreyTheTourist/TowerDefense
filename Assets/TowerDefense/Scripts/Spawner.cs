@@ -4,7 +4,7 @@ using System.Collections.Generic;
 public class Spawner : MonoBehaviour {
 	public Monster monster;
 	public float interval = 3;
-	public List<Transform> moveTargets;
+	public Transform[] moveTargets;
 
 	private float m_lastSpawn = -1;
 	private Transform m_tr;
@@ -16,7 +16,7 @@ public class Spawner : MonoBehaviour {
 	public void Spawn() {
 		var m = Instantiate(monster, m_tr);
 		m.Finished += () => Destroy(m.gameObject);
-		m.moveTargets = moveTargets;
+		m.SetStops(moveTargets);
 		m.Move();
 	}
 

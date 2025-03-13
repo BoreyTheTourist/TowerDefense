@@ -32,8 +32,9 @@ public static class ArtilleryUtils {
 	}
 
 	public static Vector3 CalcTargetVel(Transform target) {
-		if (target.TryGetComponent<Monster>(out var m)) {
-			return m.velocity;
+		var d = target.GetComponentInParent<Driver>();
+		if (d != null) {
+			return d.velocity;
 		}
 		var posb = target.position;
 		
