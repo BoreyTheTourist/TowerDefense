@@ -10,6 +10,7 @@ public class BallisticProjectileCannon : ProjectileCannon {
 	public Transform muzzle;
 	public Transform muzzleEnd;
 	public float rotationSpeed = 30f;
+	public float damage = 15f;
 
 	private Transform m_target;
 	private Driver m_driver;
@@ -60,11 +61,17 @@ public class BallisticProjectileCannon : ProjectileCannon {
 		m_tVel = vel;
 	}
 
-	public override void SetTarget(Transform target) {
-		m_target = target;
+	public override void ResetCurTarget() {
+		m_target = null;
 		if (m_driver) {
 			m_driver.VelocityChanged -= ChangeVelocity;
+			m_driver = null;
 		}
+	}
+
+	public override void SetTarget(Transform target) {
+		ResetCurTarget();
+		m_target = target;
 		m_tVel = CalcTargetVel(m_target, out m_driver);
 		if (m_driver) {
 			m_driver.VelocityChanged += ChangeVelocity;
@@ -76,6 +83,7 @@ public class BallisticProjectileCannon : ProjectileCannon {
 		p.body.useGravity = useGravity;
 		p.transform.SetPositionAndRotation(muzzleEnd.position, muzzleEnd.rotation);
 		p.body.linearVelocity = ProjVel();
+		p.damage = damage;
 		p.Destroyed += () => ProjectilePool.Release(p);
 	}
 	

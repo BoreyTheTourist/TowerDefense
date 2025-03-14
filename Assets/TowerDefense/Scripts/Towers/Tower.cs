@@ -6,37 +6,35 @@ public class Tower : MonoBehaviour {
 	public event System.Action<Transform> TargetEntered;
 	public event System.Action<Transform> TargetExited;
 
-	private Queue<Transform> m_targets = new Queue<Transform>();
+	private LinkedList<Transform> m_targets = new LinkedList<Transform>();
 
 	private void Start() {
 		var col = GetComponent<Collider>();
 		col.isTrigger = true;
 	}
 
-	// not event 'cause need to clear
 	public bool TryGetFirstTarget(out Transform target) {
-		return m_targets.TryPeek(out target);
+		if (m_targets.Count > 0) {
+			target = m_targets.First.Value;
+			return true;
+		}
+		target = null;
+		return false;
 	}
 
 	private void OnTriggerEnter(Collider other) {
-		Clean();
 		var t = other.transform;
-		m_targets.Enqueue(t);
+		var dmg = t.GetComponentInParent<Damageable>();
+		if (dmg != null) {
+			dmg.Died += () => m_targets.Remove(t);
+		}
+		m_targets.AddLast(t);
 		TargetEntered?.Invoke(t);
 	}
 
 	private void OnTriggerExit(Collider other) {
-		Clean();
-		var t = m_targets.Dequeue();
+		var t = other.transform;
+		m_targets.Remove(t);
 		TargetExited?.Invoke(t);
-	}
-
-	private void Clean() {
-		while (m_targets.TryPeek(out var t)) {
-			if (t != null) {
-				return;
-			}
-			m_targets.Dequeue();
-		}
 	}
 }

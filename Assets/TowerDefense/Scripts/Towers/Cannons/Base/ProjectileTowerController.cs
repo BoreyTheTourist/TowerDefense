@@ -20,6 +20,7 @@ public class ProjectileTowerController : MonoBehaviour {
 
 	private void FixedUpdate() {
 		if (!m_tower.TryGetFirstTarget(out var target)) {
+			m_cannon.ResetCurTarget();
 			return;
 		}
 		if (target != m_lastTarget) {

@@ -39,7 +39,7 @@ public static class ProjectilePool {
 
 [RequireComponent(typeof(Collider))]
 public abstract class Projectile : MonoBehaviour {
-	[SerializeField] protected float m_damage;
+	public float damage;
 	public event System.Action Destroyed;
 
 	private void Start() {
@@ -50,7 +50,7 @@ public abstract class Projectile : MonoBehaviour {
 	private void OnTriggerEnter(Collider other) {
 		var dmg = other.GetComponentInParent<Damageable>();
 		if (dmg != null) {
-			dmg.TakeDamage(m_damage);
+			dmg.TakeDamage(damage);
 		}
 		Destroyed?.Invoke();
 	}
